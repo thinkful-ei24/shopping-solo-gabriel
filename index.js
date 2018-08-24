@@ -33,7 +33,7 @@ function listItemToHTML(itemObject, itemIndex) {
 
   // Return generated html interpolating classes and such
   return `
-  <li class="${hiddenStatus}" data-item-index="${itemIndex}">
+  <li class="${hiddenStatus}" data-item-index="${itemObject.uid}">
     <span class="shopping-item ${checkedStatus}">${itemObject.name}</span>
     <div class="shopping-item-controls">
       <button class="shopping-item-toggle">
@@ -84,10 +84,12 @@ function addItemToStore() {
 }
 
 function constructStoreObject(listItem) {
+  const uniqueID = Math.floor(Math.random() * 10000);
   return {
     name: listItem,
     completed: false,
-    filtered: false
+    filtered: false,
+    uid: uniqueID
   };
 }
 
@@ -147,16 +149,16 @@ function handleItemCheckClicked() {
     // Retrieve the item's index in STORE from ther data attr
     const index = retrieveItemIndexFromDOM($(event.target));
     // Toggle the checked property in the store
-    toggleCheckedForListItem(index);
+    toggleCheckedForListItem($(event.target), index);
     // Re-render the shopping list
     renderShoppingList();
   });
 }
 
 // Function for toggling the checked status of a list item in store
-function toggleCheckedForListItem(index) {
+function toggleCheckedForListItem(target, index) {
   // Set value of boolean to opposite of boolean
-  STORE.data[index].completed = !STORE.data[index].completed;
+  target.completed = !target.completed;
 }
 
 /********* Functions for handling item search *********/

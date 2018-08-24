@@ -1,6 +1,6 @@
 // Create datastore
 const STORE = {
-  data: [{ name: 'test', completed: false, filtered: false }],
+  data: [],
   hideCompleted: false
 };
 // Assign shopping list to a variable for easy access
@@ -164,14 +164,14 @@ function toggleCheckedForListItem(index) {
 // User can type in a search term and the displayed list will be filtered by item names containing the search term
 // handle search submit
 function handleSearchRequest() {
-  // listen for search submission
-  $('#js-shopping-list-search').submit(event => {
-    // prevent refresh
-    event.preventDefault();
+  // listen for keyups and automatically search the datastore
+  $('#js-shopping-list-search').on('keyup', function(event) {
+    console.log('new keypress');
     // execute search result logic
     const searchObject = $('.js-shopping-list-search');
-    displaySearchResults($(searchObject));
-    // render
+    // update store
+    displaySearchResults(searchObject);
+    // render dom
     renderShoppingList();
   });
 }
@@ -180,8 +180,6 @@ function handleSearchRequest() {
 function displaySearchResults(searchObject) {
   // capture search input
   const searchTerm = searchObject.val();
-  // reset search input
-  searchObject.val('');
   // loop through STORE.data and toggle filtered unless a match is found
   STORE.data.forEach(item => {
     if (!item.name.includes(searchTerm)) {
@@ -195,11 +193,22 @@ function displaySearchResults(searchObject) {
 // Function for handling search reset
 function handleResetSearch() {
   $('#js-reset-search').on('click', function(event) {
+    // loop through the STORE.data array and set all filtered values to false
     STORE.data.forEach(item => {
       item.filtered = false;
     });
+    // select search field and reset its text
+    const searchObject = $('.js-shopping-list-search');
+    resetSearch(searchObject);
+    // render DOM
     renderShoppingList();
   });
+}
+
+// Function for resetting search results
+function resetSearch(searchObject) {
+  // reset search input
+  $(searchObject).val('');
 }
 
 /********* Functions for editing list items *********/
@@ -227,7 +236,13 @@ function promptUserForItemName(index) {
   // Get the current name from the store
   const currentItemName = STORE.data[index].name;
   // Prompt for a new name
-  return prompt('Enter new item name', currentItemName);
+  const newItemName = prompt('Enter new item name', currentItemName);
+  // make sure newItemName isn't falsy before returning
+  if (newItemName) {
+    return newItemName;
+  } else {
+    return currentItemName;
+  }
 }
 
 /********* Utility functions  *********/

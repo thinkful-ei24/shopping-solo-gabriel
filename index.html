@@ -21,9 +21,21 @@
       <button type="submit">Add item</button>
     </form>
 
+    <form id='js-shopping-list-search'>
+      <label for='shopping-list-search'>Search: </label>
+      <input type='text' name='shopping-list-search' class='js-shopping-list-search' placeholder='Enter search'>
+      <button id='#search'>Search</button>
+    </form>
+
+    <div>
+      <button id='js-toggle-hidden'>Hide completed</button>
+      <button id='js-reset-search'>Reset</button>
+    </div>
+
     <ul class="shopping-list">
     </ul>
   </div>
+
   <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
     crossorigin="anonymous"></script>
   <script src="index.js"></script>

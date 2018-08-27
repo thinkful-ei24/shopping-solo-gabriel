@@ -1,7 +1,8 @@
 // Create datastore
 const STORE = {
   data: [],
-  hideCompleted: false
+  hideCompleted: false,
+  searchString: ''
 };
 // Assign shopping list to a variable for easy access
 const SHOPPING_LIST_CLASS = 'ul.shopping-list';
@@ -33,7 +34,7 @@ function listItemToHTML(itemObject, itemIndex) {
 
   // Return generated html interpolating classes and such
   return `
-  <li class="${hiddenStatus}" data-item-index="${itemObject.uid}">
+  <li class="${hiddenStatus}" data-item-index="${itemIndex}">
     <span class="shopping-item ${checkedStatus}">${itemObject.name}</span>
     <div class="shopping-item-controls">
       <button class="shopping-item-toggle">
@@ -84,12 +85,10 @@ function addItemToStore() {
 }
 
 function constructStoreObject(listItem) {
-  const uniqueID = Math.floor(Math.random() * 10000);
   return {
     name: listItem,
     completed: false,
-    filtered: false,
-    uid: uniqueID
+    filtered: false
   };
 }
 
@@ -149,16 +148,16 @@ function handleItemCheckClicked() {
     // Retrieve the item's index in STORE from ther data attr
     const index = retrieveItemIndexFromDOM($(event.target));
     // Toggle the checked property in the store
-    toggleCheckedForListItem($(event.target), index);
+    toggleCheckedForListItem(index);
     // Re-render the shopping list
     renderShoppingList();
   });
 }
 
 // Function for toggling the checked status of a list item in store
-function toggleCheckedForListItem(target, index) {
+function toggleCheckedForListItem(index) {
   // Set value of boolean to opposite of boolean
-  target.completed = !target.completed;
+  STORE.data[index].completed = !STORE.data[index].completed;
 }
 
 /********* Functions for handling item search *********/
@@ -168,28 +167,33 @@ function toggleCheckedForListItem(target, index) {
 function handleSearchRequest() {
   // listen for keyups and automatically search the datastore
   $('#js-shopping-list-search').on('keyup', function(event) {
-    console.log('new keypress');
     // execute search result logic
     const searchObject = $('.js-shopping-list-search');
+    // capture search input
+    const searchTerm = searchObject.val();
     // update store
-    displaySearchResults(searchObject);
+    updateStoreSearchString(searchTerm);
+    displaySearchResults();
     // render dom
     renderShoppingList();
   });
 }
 
 // Function for displaying search results
-function displaySearchResults(searchObject) {
-  // capture search input
-  const searchTerm = searchObject.val();
+function displaySearchResults() {
   // loop through STORE.data and toggle filtered unless a match is found
   STORE.data.forEach(item => {
-    if (!item.name.includes(searchTerm)) {
+    if (!item.name.includes(STORE.data.searchString)) {
       item.filtered = true; // if name doesn't include term filter it out
     } else {
       item.filtered = false; // if name does include term
     }
   });
+}
+
+// Function for updating datastore search string
+function updateStoreSearchString(string) {
+  STORE.data.searchString = string;
 }
 
 // Function for handling search reset
@@ -211,6 +215,8 @@ function handleResetSearch() {
 function resetSearch(searchObject) {
   // reset search input
   $(searchObject).val('');
+  // reset store searchString
+  STORE.data.searchString = '';
 }
 
 /********* Functions for editing list items *********/
